@@ -1,0 +1,15 @@
+<%- include('../partials/header') %>
+
+<div style="max-width: 600px; margin: 4rem auto; text-align: center; background: #fff; padding: 3rem 2rem; border-radius: var(--radius); border: 1px solid #fecaca; box-shadow: var(--shadow);">
+  <div style="font-size: 3.5rem; margin-bottom: 1rem;">🛑</div>
+  <h1 style="font-size: 2rem; font-weight: 800; color: #991b1b; margin-bottom: 0.75rem;">403 — Access Forbidden</h1>
+  <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem;">
+    <%= typeof message !== 'undefined' ? message : 'Security Alert: You do not have the required permissions or role to access this restricted resource.' %>
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="/" class="btn btn-primary">Return to Marketplace</a>
+    <a href="/auth/login" class="btn btn-secondary">Switch Account</a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

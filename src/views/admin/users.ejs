@@ -1,0 +1,70 @@
+<%- include('../partials/header') %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h1 style="font-size: 1.75rem; font-weight: 700;">Account & Identity Management</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Manage marketplace participant roles and enforce suspensions.</p>
+  </div>
+  <a href="/admin" class="btn btn-secondary">← Back to Admin Console</a>
+</div>
+
+<div class="table-responsive">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User Details</th>
+        <th>Role</th>
+        <th>Activity</th>
+        <th>Account Status</th>
+        <th>Change Role</th>
+        <th>Status Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(u => { %>
+        <tr>
+          <td>#<%= u.id %></td>
+          <td>
+            <div style="font-weight: 600;"><%= u.name %></div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);"><%= u.email %></div>
+          </td>
+          <td>
+            <span class="badge badge-<%= u.role %>"><%= u.role %></span>
+          </td>
+          <td style="font-size: 0.85rem; color: var(--text-muted);">
+            <%= u.role === 'vendor' ? `${u.product_count} products` : `${u.order_count} orders` %>
+          </td>
+          <td>
+            <span class="badge badge-<%= u.status === 'active' ? 'active' : 'delisted' %>">
+              <%= u.status %>
+            </span>
+          </td>
+          <td>
+            <form action="/admin/users/<%= u.id %>/role" method="POST" style="display: flex; gap: 0.35rem; margin: 0;">
+              <select name="role" class="form-control" style="width: 110px; padding: 0.25rem 0.5rem; font-size: 0.8rem; margin: 0;">
+                <option value="customer" <%= u.role === 'customer' ? 'selected' : '' %>>Customer</option>
+                <option value="vendor" <%= u.role === 'vendor' ? 'selected' : '' %>>Vendor</option>
+                <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
+              </select>
+              <button type="submit" class="btn btn-secondary btn-sm" <%= u.id === currentAdminId ? 'disabled' : '' %>>Save</button>
+            </form>
+          </td>
+          <td>
+            <% if (u.id !== currentAdminId) { %>
+              <form action="/admin/users/<%= u.id %>/status" method="POST" style="margin: 0;">
+                <button type="submit" class="btn <%= u.status === 'active' ? 'btn-danger' : 'btn-primary' %> btn-sm">
+                  <%= u.status === 'active' ? 'Suspend' : 'Activate' %>
+                </button>
+              </form>
+            <% } else { %>
+              <span style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">Self (Protected)</span>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

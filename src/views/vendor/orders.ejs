@@ -1,0 +1,57 @@
+<%- include('../partials/header') %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h1 style="font-size: 1.75rem; font-weight: 700;">Vendor Fulfillment Orders</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Review customer orders for items purchased from your store.</p>
+  </div>
+  <a href="/vendor" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+
+<% if (orders.length === 0) { %>
+  <div style="text-align: center; padding: 4rem 1rem; background: #fff; border: 1px solid var(--border); border-radius: var(--radius);">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+    <h3>No orders received yet</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">When customers purchase your products, fulfillment orders will appear here.</p>
+  </div>
+<% } else { %>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Unit Price</th>
+          <th>Qty</th>
+          <th>Item Total</th>
+          <th>Status</th>
+          <th>Shipping Destination</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(ord => { %>
+          <tr>
+            <td style="font-weight: 600;">#ORD-<%= ord.order_id %></td>
+            <td style="font-size: 0.85rem;"><%= new Date(ord.created_at).toLocaleString() %></td>
+            <td>
+              <div style="font-weight: 500;"><%= ord.customer_name %></div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);"><%= ord.customer_email %></div>
+            </td>
+            <td style="font-weight: 600;"><%= ord.product_title %></td>
+            <td>$<%= Number(ord.unit_price).toFixed(2) %></td>
+            <td><%= ord.quantity %></td>
+            <td style="font-weight: 700; color: var(--accent);">$<%= Number(ord.item_total).toFixed(2) %></td>
+            <td>
+              <span class="badge badge-<%= ord.order_status %>"><%= ord.order_status %></span>
+            </td>
+            <td style="font-size: 0.85rem; max-width: 200px;"><%= ord.shipping_address %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

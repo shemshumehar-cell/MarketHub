@@ -1,0 +1,59 @@
+<%- include('../partials/header') %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h1 style="font-size: 1.75rem; font-weight: 700;">Global Order Monitoring</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Monitor transactions, fulfillment states, and buyer shipping destinations.</p>
+  </div>
+  <a href="/admin" class="btn btn-secondary">← Back to Admin Console</a>
+</div>
+
+<div class="table-responsive">
+  <table>
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Date</th>
+        <th>Customer</th>
+        <th>Items</th>
+        <th>Total Amount</th>
+        <th>Status</th>
+        <th>Update Fulfillment</th>
+        <th>Receipt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach(ord => { %>
+        <tr>
+          <td style="font-weight: 600;">#ORD-<%= ord.id %></td>
+          <td style="font-size: 0.85rem;"><%= new Date(ord.created_at).toLocaleString() %></td>
+          <td>
+            <div style="font-weight: 500;"><%= ord.customer_name %></div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);"><%= ord.customer_email %></div>
+          </td>
+          <td><%= ord.item_count %> items</td>
+          <td style="font-weight: 700;">$<%= Number(ord.total_amount).toFixed(2) %></td>
+          <td>
+            <span class="badge badge-<%= ord.status %>"><%= ord.status %></span>
+          </td>
+          <td>
+            <form action="/admin/orders/<%= ord.id %>/status" method="POST" style="display: flex; gap: 0.35rem; margin: 0;">
+              <select name="status" class="form-control" style="width: 120px; padding: 0.25rem 0.5rem; font-size: 0.8rem; margin: 0;">
+                <option value="paid" <%= ord.status === 'paid' ? 'selected' : '' %>>Paid</option>
+                <option value="shipped" <%= ord.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                <option value="delivered" <%= ord.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                <option value="cancelled" <%= ord.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+              </select>
+              <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+            </form>
+          </td>
+          <td>
+            <a href="/orders/<%= ord.id %>" class="btn btn-secondary btn-sm">View</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

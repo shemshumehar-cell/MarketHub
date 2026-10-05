@@ -1,0 +1,70 @@
+<%- include('../partials/header') %>
+
+<div style="margin-bottom: 1.5rem;">
+  <a href="/" style="font-size: 0.9rem; color: var(--text-muted);">← Back to marketplace</a>
+</div>
+
+<div class="card" style="display: flex; flex-direction: row; flex-wrap: wrap; overflow: hidden;">
+  <div style="flex: 1; min-width: 320px; background-color: #f1f5f9; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <img src="<%= product.image_url || '/images/placeholder.svg' %>" alt="<%= product.title %>" style="max-width: 100%; max-height: 380px; object-fit: contain; border-radius: var(--radius);">
+  </div>
+
+  <div style="flex: 1.2; min-width: 320px; padding: 2.5rem; display: flex; flex-direction: column;">
+    <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
+      <span class="badge badge-<%= product.status === 'active' ? 'active' : 'delisted' %>">
+        <%= product.status %>
+      </span>
+      <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
+        Category: <%= product.category_name || 'General' %>
+      </span>
+    </div>
+
+    <h1 style="font-size: 1.85rem; font-weight: 700; margin-bottom: 1rem; color: var(--secondary);">
+      <%= product.title %>
+    </h1>
+
+    <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem;">
+      <span style="font-size: 2rem; font-weight: 800; color: var(--secondary);">$<%= Number(product.price).toFixed(2) %></span>
+      <span style="font-size: 0.9rem; font-weight: 600; color: <%= product.stock > 0 ? 'var(--accent)' : 'var(--danger)' %>;">
+        <%= product.stock > 0 ? `In Stock (${product.stock} available)` : 'Temporarily Out of Stock' %>
+      </span>
+    </div>
+
+    <div style="background-color: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+      <div style="font-size: 0.85rem; font-weight: 600; color: var(--secondary); margin-bottom: 0.25rem;">
+        🏪 Verified Marketplace Vendor
+      </div>
+      <div style="font-size: 0.9rem; color: var(--text-muted);">
+        Sold and shipped by <strong><%= product.vendor_name %></strong> (<%= product.vendor_email %>)
+      </div>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Description & Specifications</h3>
+      <p style="color: #475569; font-size: 0.95rem; white-space: pre-line; line-height: 1.6;">
+        <%= product.description || 'No detailed description provided for this item.' %>
+      </p>
+    </div>
+
+    <% if (product.stock > 0 && product.status === 'active') { %>
+      <form action="/cart/add" method="POST" style="display: flex; gap: 1rem; align-items: center; margin-top: auto;">
+        <input type="hidden" name="productId" value="<%= product.id %>">
+        <div style="width: 100px;">
+          <label class="form-label" style="margin-bottom: 0.2rem; font-size: 0.8rem;">Qty</label>
+          <input type="number" name="quantity" class="form-control" value="1" min="1" max="<%= product.stock %>" required>
+        </div>
+        <div style="flex: 1; padding-top: 1.2rem;">
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+            🛒 Add to Shopping Cart
+          </button>
+        </div>
+      </form>
+    <% } else { %>
+      <div class="alert alert-error" style="margin-top: auto; margin-bottom: 0;">
+        This item is currently unavailable for purchase.
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

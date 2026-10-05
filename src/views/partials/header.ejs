@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'MarketHub — Secure Marketplace' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <span class="brand-shield">🛡️</span> MarketHub
+    </a>
+
+    <div class="nav-links">
+      <a href="/" class="nav-link">Marketplace</a>
+
+      <% if (currentUser) { %>
+        <% if (currentUser.role === 'customer' || currentUser.role === 'admin') { %>
+          <a href="/cart" class="nav-link">🛒 Cart</a>
+          <a href="/orders" class="nav-link">📦 My Orders</a>
+        <% } %>
+
+        <% if (currentUser.role === 'vendor' || currentUser.role === 'admin') { %>
+          <a href="/vendor" class="nav-link">🏪 Vendor Center</a>
+        <% } %>
+
+        <% if (currentUser.role === 'admin') { %>
+          <a href="/admin" class="nav-link">⚙️ Admin Center</a>
+        <% } %>
+
+        <div class="nav-user">
+          <span class="badge badge-<%= currentUser.role %>"><%= currentUser.role %></span>
+          <span style="font-size: 0.85rem; font-weight: 500;"><%= currentUser.name.split(' ')[0] %></span>
+          <a href="/auth/logout" class="btn btn-secondary btn-sm">Logout</a>
+        </div>
+      <% } else { %>
+        <a href="/auth/login" class="nav-link">Login</a>
+        <a href="/auth/register" class="btn btn-primary btn-sm">Register</a>
+      <% } %>
+    </div>
+  </nav>
+
+  <main class="container">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error">
+        <span>⚠️ <%= error %></span>
+      </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success">
+        <span>✅ <%= success %></span>
+      </div>
+    <% } %>

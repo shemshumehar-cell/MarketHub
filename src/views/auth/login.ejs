@@ -1,0 +1,58 @@
+<%- include('../partials/header') %>
+
+<div class="form-card">
+  <div style="text-align: center; margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--secondary);">Sign in to MarketHub</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Secure role-based marketplace access</p>
+  </div>
+
+  <form action="/auth/login" method="POST">
+    <div class="form-group">
+      <label class="form-label" for="email">Email Address</label>
+      <input type="email" id="email" name="email" class="form-control" required placeholder="name@example.com">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <input type="password" id="password" name="password" class="form-control" required placeholder="••••••••">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; margin-top: 0.5rem;">
+      Authenticate & Sign In
+    </button>
+  </form>
+
+  <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+    Don't have an account? <a href="/auth/register">Create an account</a>
+  </div>
+
+  <!-- Quick Demo Credentials Box for Hackathon Evaluators -->
+  <div style="margin-top: 2rem; padding: 1rem; background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--radius); font-size: 0.8rem;">
+    <div style="font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">
+      🔑 Evaluator Demo Credentials (Password for all: <code>Password123!</code>)
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span><strong>Admin:</strong> <code>admin@markethub.local</code></span>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="fillCreds('admin@markethub.local')">Use</button>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span><strong>Vendor:</strong> <code>vendor@markethub.local</code></span>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="fillCreds('vendor@markethub.local')">Use</button>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span><strong>Customer:</strong> <code>customer@markethub.local</code></span>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="fillCreds('customer@markethub.local')">Use</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fillCreds(email) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = 'Password123!';
+  }
+</script>
+
+<%- include('../partials/footer') %>

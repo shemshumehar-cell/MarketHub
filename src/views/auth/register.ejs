@@ -1,0 +1,69 @@
+<%- include('../partials/header') %>
+
+<div class="form-card">
+  <div style="text-align: center; margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--secondary);">Create Your Account</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Join the MarketHub decentralized ecosystem</p>
+  </div>
+
+  <form action="/auth/register" method="POST">
+    <div class="form-group">
+      <label class="form-label" for="name">Full Name or Store Name</label>
+      <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        class="form-control" 
+        required 
+        value="<%= typeof values !== 'undefined' && values.name ? values.name : '' %>"
+        placeholder="e.g. John Doe or CyberSafe Supplies"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="email">Email Address</label>
+      <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        class="form-control" 
+        required 
+        value="<%= typeof values !== 'undefined' && values.email ? values.email : '' %>"
+        placeholder="name@example.com"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="role">Account Role</label>
+      <select id="role" name="role" class="form-control" required>
+        <option value="customer" <%= typeof values !== 'undefined' && values.role === 'customer' ? 'selected' : '' %>>
+          Buyer / Customer (Browse, Cart & Order)
+        </option>
+        <option value="vendor" <%= typeof values !== 'undefined' && values.role === 'vendor' ? 'selected' : '' %>>
+          Merchant / Vendor (Sell products & manage inventory)
+        </option>
+      </select>
+      <div class="form-help">Administrative accounts are provisioned via platform keys only.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <input type="password" id="password" name="password" class="form-control" required placeholder="Minimum 8 characters">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required placeholder="Re-enter password">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; margin-top: 0.5rem;">
+      Register Account
+    </button>
+  </form>
+
+  <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+    Already registered? <a href="/auth/login">Sign in</a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

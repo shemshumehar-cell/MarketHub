@@ -1,0 +1,101 @@
+<%- include('partials/header') %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+  <div>
+    <h1 style="font-size: 1.8rem; font-weight: 700;">Discover Secure Products</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Verified cryptographic hardware, defensive security tools, and tech essentials from verified vendors.</p>
+  </div>
+
+  <form action="/" method="GET" style="display: flex; gap: 0.5rem; flex: 1; max-width: 480px;">
+    <input 
+      type="text" 
+      name="q" 
+      class="form-control" 
+      placeholder="Search products or vendors..." 
+      value="<%= searchQuery || '' %>"
+      style="margin-bottom: 0;"
+    >
+    <% if (selectedCategory) { %>
+      <input type="hidden" name="category" value="<%= selectedCategory %>">
+    <% } %>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <% if (searchQuery || selectedCategory) { %>
+      <a href="/" class="btn btn-secondary">Clear</a>
+    <% } %>
+  </form>
+</div>
+
+<!-- Category Filters -->
+<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+  <a href="/<%= searchQuery ? '?q=' + encodeURIComponent(searchQuery) : '' %>" 
+     class="btn <%= !selectedCategory ? 'btn-primary' : 'btn-secondary' %> btn-sm">
+    All Categories
+  </a>
+  <% categories.forEach(cat => { %>
+    <a href="/?category=<%= cat.slug %><%= searchQuery ? '&q=' + encodeURIComponent(searchQuery) : '' %>" 
+       class="btn <%= selectedCategory === cat.slug ? 'btn-primary' : 'btn-secondary' %> btn-sm">
+      <%= cat.name %>
+    </a>
+  <% }) %>
+</div>
+
+<!-- Products Grid -->
+<% if (products.length === 0) { %>
+  <div style="text-align: center; padding: 4rem 1rem; background: #fff; border: 1px solid var(--border); border-radius: var(--radius);">
+    <h3 style="color: var(--text-muted); margin-bottom: 0.5rem;">No products found</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">Try adjusting your search criteria or explore other categories.</p>
+    <a href="/" class="btn btn-primary btn-sm" style="margin-top: 1rem;">View All Products</a>
+  </div>
+<% } else { %>
+  <div class="grid">
+    <% products.forEach(prod => { %>
+      <div class="card">
+        <a href="/products/<%= prod.id %>">
+          <img src="<%= prod.image_url || '/images/placeholder.svg' %>" alt="<%= prod.title %>" class="card-img">
+        </a>
+        <div class="card-body">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+              <%= prod.category_name || 'General' %>
+            </span>
+            <span style="font-size: 0.75rem; color: var(--primary); font-weight: 500;">
+              🏪 <%= prod.vendor_name %>
+            </span>
+          </div>
+
+          <h3 class="card-title">
+            <a href="/products/<%= prod.id %>" style="color: inherit; text-decoration: none;">
+              <%= prod.title %>
+            </a>
+          </h3>
+
+          <p class="card-text">
+            <%= prod.description ? (prod.description.length > 90 ? prod.description.substring(0, 90) + '...' : prod.description) : 'No description provided.' %>
+          </p>
+
+          <div class="card-footer">
+            <div>
+              <div class="price">$<%= Number(prod.price).toFixed(2) %></div>
+              <div style="font-size: 0.75rem; color: <%= prod.stock > 0 ? 'var(--accent)' : 'var(--danger)' %>; font-weight: 600;">
+                <%= prod.stock > 0 ? prod.stock + ' in stock' : 'Out of stock' %>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+              <a href="/products/<%= prod.id %>" class="btn btn-secondary btn-sm">Details</a>
+              <% if (prod.stock > 0) { %>
+                <form action="/cart/add" method="POST" style="margin: 0;">
+                  <input type="hidden" name="productId" value="<%= prod.id %>">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="btn btn-primary btn-sm">+ Cart</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

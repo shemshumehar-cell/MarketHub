@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200" fill="none">
+  <rect width="300" height="200" fill="#0f172a"/>
+  <rect x="70" y="50" width="160" height="100" rx="10" fill="#334155" stroke="#64748b" stroke-width="2"/>
+  <circle cx="95" cy="75" r="4" fill="#10b981"/>
+  <rect x="95" y="95" width="110" height="30" rx="4" fill="#1e293b"/>
+  <text x="150" y="115" font-family="monospace" font-size="12" fill="#38bdf8" text-anchor="middle">AES-256 ENCRYPTED</text>
+  <text x="150" y="175" font-family="sans-serif" font-size="13" fill="#94a3b8" text-anchor="middle">Secure NVMe SSD</text>
+</svg>

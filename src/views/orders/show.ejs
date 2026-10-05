@@ -1,0 +1,78 @@
+<%- include('../partials/header') %>
+
+<div style="margin-bottom: 1.5rem;">
+  <a href="/orders" style="font-size: 0.9rem; color: var(--text-muted);">← Back to all orders</a>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto; padding: 2.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+    <div>
+      <span class="badge badge-<%= order.status %>" style="margin-bottom: 0.5rem;"><%= order.status %></span>
+      <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--secondary);">Order Receipt #ORD-<%= order.id %></h1>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Date: <%= new Date(order.created_at).toUTCString() %></p>
+    </div>
+    <div style="text-align: right;">
+      <div style="font-size: 0.85rem; color: var(--text-muted);">Customer</div>
+      <div style="font-weight: 600;"><%= order.customer_name %></div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);"><%= order.customer_email %></div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 1.5rem;">
+    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem;">Shipping Address</h3>
+    <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 0.9rem; color: #334155;">
+      <%= order.shipping_address %>
+    </div>
+  </div>
+
+  <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">Purchased Items</h3>
+  <div class="table-responsive" style="margin-bottom: 1.5rem;">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Vendor</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(item => { %>
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <img src="<%= item.image_url || '/images/placeholder.svg' %>" alt="<%= item.product_title %>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: #f1f5f9;">
+                <span style="font-weight: 600;"><%= item.product_title %></span>
+              </div>
+            </td>
+            <td><span style="font-size: 0.85rem; color: var(--text-muted);">🏪 <%= item.vendor_name %></span></td>
+            <td>$<%= Number(item.unit_price).toFixed(2) %></td>
+            <td><%= item.quantity %></td>
+            <td style="font-weight: 700;">$<%= (item.unit_price * item.quantity).toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="display: flex; justify-content: flex-end;">
+    <div style="width: 250px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+        <span>Subtotal</span>
+        <span>$<%= Number(order.total_amount).toFixed(2) %></span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+        <span>Shipping</span>
+        <span>FREE</span>
+      </div>
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 0.75rem 0;">
+      <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: var(--secondary);">
+        <span>Grand Total</span>
+        <span>$<%= Number(order.total_amount).toFixed(2) %></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

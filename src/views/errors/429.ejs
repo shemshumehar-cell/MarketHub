@@ -1,0 +1,12 @@
+<%- include('../partials/header') %>
+
+<div style="max-width: 600px; margin: 4rem auto; text-align: center; background: #fff; padding: 3rem 2rem; border-radius: var(--radius); border: 1px solid #fed7aa; box-shadow: var(--shadow);">
+  <div style="font-size: 3.5rem; margin-bottom: 1rem;">⏳</div>
+  <h1 style="font-size: 2rem; font-weight: 800; color: #c2410c; margin-bottom: 0.75rem;">429 — Rate Limit Exceeded</h1>
+  <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem;">
+    <%= typeof message !== 'undefined' ? message : 'Too many requests have been detected from your IP address. Please wait a short duration before trying again.' %>
+  </p>
+  <a href="/" class="btn btn-primary">Return to Marketplace</a>
+</div>
+
+<%- include('../partials/footer') %>

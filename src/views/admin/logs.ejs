@@ -1,0 +1,51 @@
+<%- include('../partials/header') %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h1 style="font-size: 1.75rem; font-weight: 700;">Security Audit Log Stream</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Tamper-evident chronological record of authentication, authorization, and administrative events.</p>
+  </div>
+  <a href="/admin" class="btn btn-secondary">← Back to Admin Console</a>
+</div>
+
+<div class="table-responsive">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Event Time (UTC)</th>
+        <th>Security Event</th>
+        <th>Actor User</th>
+        <th>Client IP</th>
+        <th>Audit Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% logs.forEach(log => { %>
+        <tr>
+          <td style="font-family: monospace; font-size: 0.8rem;">#<%= log.id %></td>
+          <td style="font-family: monospace; font-size: 0.8rem; color: var(--text-muted);">
+            <%= new Date(log.created_at).toISOString().replace('T', ' ').substring(0, 19) %>
+          </td>
+          <td>
+            <span class="badge" style="background-color: <%= log.action.includes('ATTEMPT') || log.action.includes('FAILED') || log.action.includes('UNAUTHORIZED') ? '#fee2e2' : '#e2e8f0' %>; color: <%= log.action.includes('ATTEMPT') || log.action.includes('FAILED') || log.action.includes('UNAUTHORIZED') ? '#991b1b' : '#0f172a' %>; font-family: monospace;">
+              <%= log.action %>
+            </span>
+          </td>
+          <td>
+            <% if (log.user_email) { %>
+              <div style="font-weight: 500;"><%= log.user_email %></div>
+              <span class="badge badge-<%= log.user_role %>" style="font-size: 0.7rem;"><%= log.user_role %></span>
+            <% } else { %>
+              <span style="color: var(--text-muted); font-style: italic;">Unauthenticated / System</span>
+            <% } %>
+          </td>
+          <td style="font-family: monospace; font-size: 0.85rem;"><%= log.ip_address %></td>
+          <td style="font-size: 0.85rem; color: #334155;"><%= log.details %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

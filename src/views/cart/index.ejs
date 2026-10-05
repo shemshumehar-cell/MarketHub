@@ -1,0 +1,100 @@
+<%- include('../partials/header') %>
+
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+  <h1 style="font-size: 1.75rem; font-weight: 700;">Shopping Cart</h1>
+  <span style="color: var(--text-muted); font-size: 0.95rem;"><%= itemCount %> items in cart</span>
+</div>
+
+<% if (items.length === 0) { %>
+  <div style="text-align: center; padding: 4rem 1rem; background: #fff; border: 1px solid var(--border); border-radius: var(--radius);">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🛒</div>
+    <h3 style="margin-bottom: 0.5rem;">Your shopping cart is empty</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Browse our marketplace products to add items to your cart.</p>
+    <a href="/" class="btn btn-primary">Start Shopping</a>
+  </div>
+<% } else { %>
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 2rem; align-items: flex-start;">
+    <!-- Items Table -->
+    <div class="table-responsive" style="flex: 2; min-width: 320px; margin-top: 0;">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Vendor</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(item => { %>
+            <tr>
+              <td>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <img src="<%= item.image_url || '/images/placeholder.svg' %>" alt="<%= item.title %>" style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px; background: #f1f5f9;">
+                  <div>
+                    <a href="/products/<%= item.product_id %>" style="font-weight: 600; color: var(--secondary);">
+                      <%= item.title %>
+                    </a>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size: 0.85rem; color: var(--text-muted);">🏪 <%= item.vendor_name %></span></td>
+              <td>$<%= Number(item.price).toFixed(2) %></td>
+              <td>
+                <form action="/cart/update/<%= item.cart_item_id %>" method="POST" style="display: flex; align-items: center; gap: 0.35rem; margin: 0;">
+                  <input type="number" name="quantity" value="<%= item.quantity %>" min="1" max="<%= item.stock %>" class="form-control" style="width: 65px; padding: 0.35rem; margin-bottom: 0;">
+                  <button type="submit" class="btn btn-secondary btn-sm" title="Update Quantity">✓</button>
+                </form>
+              </td>
+              <td style="font-weight: 700;">$<%= item.itemTotal %></td>
+              <td>
+                <form action="/cart/remove/<%= item.cart_item_id %>" method="POST" style="margin: 0;">
+                  <button type="submit" class="btn btn-danger btn-sm" title="Remove Item">✕</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Order Summary Card -->
+    <div class="card" style="flex: 1; min-width: 280px; padding: 1.5rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Order Summary</h3>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; color: var(--text-muted);">
+        <span>Subtotal</span>
+        <span>$<%= subtotal %></span>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; color: var(--text-muted);">
+        <span>Estimated Shipping</span>
+        <span style="color: var(--accent); font-weight: 600;">FREE (Promo)</span>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; color: var(--text-muted);">
+        <span>Sales Tax</span>
+        <span>$0.00</span>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border); margin-bottom: 1rem;">
+
+      <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 700; color: var(--secondary);">
+        <span>Estimated Total</span>
+        <span>$<%= subtotal %></span>
+      </div>
+
+      <a href="/orders/checkout" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+        Proceed to Secure Checkout →
+      </a>
+
+      <div style="margin-top: 1rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+        🔒 Simulated End-to-End Encrypted Checkout
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

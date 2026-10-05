@@ -4,16 +4,12 @@
 # - If your team has 4 members: provide all 4 members.
 
 team:
-  team_id: ""
-  name: ""
-  repository: "" # URL of the newly created GitHub repository for this project
+  team_id: "T.No-46B"
+  name: "Data Logic"
+  repository: "https://github.com/shemshumehar-cell/MarketHub.git"
 
 members:
-  - name: ""
-    email: ""
-  - name: ""
-    email: ""
-  - name: ""
-    email: ""
-  - name: ""
-    email: ""
+  - name: "Sadiya Sarwat"
+    email: "25p61a67g4@vbithyd.ac.in"
+  - name: "Shemshu mehar"
+    email: "25p61a67g6@vbithyd.ac.in"

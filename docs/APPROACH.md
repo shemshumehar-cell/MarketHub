@@ -1,9 +1,9 @@
 # Project Approach & Architecture — Build Secure 24
 
-**Team ID:** 
-**Project Name:** 
-**Team Size:** [2 or 4 Members]
-**Primary Track / Domain:** 
+**Team ID:** T.No-46B
+**Project Name:** MarketHub — Secure Multi-Vendor Marketplace
+**Team Size:** 2 Members
+**Primary Track / Domain:** Web Application Security & Secure E-Commerce Architecture
 
 ---
 

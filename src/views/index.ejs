@@ -1,5 +1,51 @@
 <%- include('partials/header') %>
 
+<!-- MarketHub Hero -->
+<section class="mh-hero">
+  <div class="mh-hero-content">
+    <span class="mh-badge">🛡️ VERIFIED & SECURE MARKETPLACE</span>
+
+    <h1>Discover Local.<br><span>Shop Smart. Stay Secure.</span></h1>
+
+    <p>
+      Explore trusted products from verified sellers with security built into every transaction.
+    </p>
+
+    <div class="mh-hero-buttons">
+      <a href="#products" class="btn btn-primary">Explore Marketplace →</a>
+      <a href="/register" class="btn btn-secondary">Start Selling</a>
+    </div>
+
+    <div class="mh-stats">
+      <div>
+        <strong>500+</strong>
+        <span>Products</span>
+      </div>
+
+      <div>
+        <strong>98%</strong>
+        <span>Trust Score</span>
+      </div>
+
+      <div>
+        <strong>100%</strong>
+        <span>Security Focus</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mh-security-card">
+    <div class="mh-shield">🛡️</div>
+
+    <h3>MarketHub Security</h3>
+    <p>Protected marketplace experience</p>
+
+    <div class="mh-check">✓ Verified Sellers</div>
+    <div class="mh-check">✓ Secure Authentication</div>
+    <div class="mh-check">✓ XSS Protection</div>
+    <div class="mh-check">✓ SQL Injection Protection</div>
+  </div>
+</section>
 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
   <div>
     <h1 style="font-size: 1.8rem; font-weight: 700;">Discover Secure Products</h1>
@@ -47,7 +93,7 @@
     <a href="/" class="btn btn-primary btn-sm" style="margin-top: 1rem;">View All Products</a>
   </div>
 <% } else { %>
-  <div class="grid">
+  <div id="products" class="grid"></div>
     <% products.forEach(prod => { %>
       <div class="card">
         <a href="/products/<%= prod.id %>">

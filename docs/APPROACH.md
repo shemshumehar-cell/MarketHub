@@ -1,100 +1,50 @@
 # Project Approach & Architecture — Build Secure 24
 
-**Team ID:** T.No-46B  
-**Project Name:** MarketHub — Secure Multi-Vendor Marketplace  
-**Team Size:** 2 Members  
-**Primary Track / Domain:** Web Application Security & Secure E-Commerce Architecture  
+**Team ID:** 
+**Project Name:** 
+**Team Size:** [2 or 4 Members]
+**Primary Track / Domain:** 
 
 ---
 
 ## 1. Problem Understanding, Scope & Threat Model
 
 ### 1.1 Problem Statement & Real-World Motivation
-Multi-vendor marketplaces present unique cybersecurity challenges beyond standard e-commerce platforms. In an ecosystem where untrusted third-party vendors publish listings alongside genuine merchants, traditional trust models fail. Common architectural flaws include:
-- **Insecure Direct Object References (IDOR / BOLA):** Malicious vendors modifying competitor products, pricing, or viewing competitors' customer orders.
-- **Cross-Site Scripting (XSS):** Stored XSS embedded inside product titles or descriptions compromising buyer session cookies.
-- **SQL Injection (SQLi):** Attacking search filters or catalog queries to extract user databases.
-- **Privilege Escalation:** Regular customers or vendors bypassing access controls to access administrative consoles.
-- **Malicious File Uploads:** Uploading web shells disguised as product imagery to achieve remote code execution (RCE).
-
-MarketHub implements defense-in-depth security to provide a secure marketplace accommodating Buyers, Merchants, and Platform Administrators with mutual zero-trust boundaries.
+*Describe the specific problem your project solves, why it matters, and the core security challenges involved.*
 
 ### 1.2 Target Users & Personas
-
-| Persona | Trust Level | Capabilities & Boundaries |
-|---------|-------------|----------------------------|
-| **Customer (Buyer)** | Low | Browse, search, filter catalog, manage personal cart, execute mock checkout, review personal order history. Strict boundary: cannot view other buyers' orders or access vendor/admin tools. |
-| **Vendor (Merchant)** | Medium-Untrusted | Self-service product publication, edit/delete *own* listings only, view fulfillment orders for *own* products. Strict boundary: zero access to competitor inventory, competitor orders, or platform users. |
-| **Administrator** | High | System-wide moderation, account status toggles (active/suspended), product delisting, order monitoring, security audit log analysis. |
+*Identify target user groups, their operational workflows, and their trust levels (e.g. End User, Admin, Auditor).*
 
 ### 1.3 Threat Model & Attack Surface
-
-- **Critical Assets:** User credentials, password hashes, session IDs, customer shipping addresses, product inventory counts, transactional order records, tamper-evident audit logs.
-- **Potential Attack Vectors:**
-  1. *Credential Stuffing / Brute Force:* Thwarted via `express-rate-limit` (15 attempts / 15 mins).
-  2. *Session Hijacking / XSS:* Thwarted via `httpOnly`, `sameSite: 'lax'` cookies, Helmet Content Security Policy (CSP), and EJS contextual escaping.
-  3. *Insecure Direct Object References (IDOR):* Thwarted via server-side session ownership checks (`WHERE id = ? AND vendor_id = ?`).
-  4. *SQL Injection (SQLi):* 100% prepared statements with parameterized queries using native `node:sqlite`.
-  5. *Unrestricted File Upload:* Thwarted via strict MIME & extension whitelist, 2MB size cap, and random hexadecimal filename rewriting.
-  6. *Privilege Escalation:* Role parameter whitelisting during registration (rejecting unauthorized `admin` registrations) and server-side RBAC middleware.
+*Document the threat landscape for this system:*
+- **Critical Assets:** (e.g., user credentials, PII, sensitive business records, session tokens)
+- **Potential Attack Vectors:** (e.g., credential stuffing, injection attacks, privilege escalation, unauthorized API access)
+- **OWASP Top 10 Considerations:** (e.g., broken access control, cryptographic failures, injection prevention)
 
 ---
 
 ## 2. Technical Architecture & Secure System Design
 
 ### 2.1 High-Level Architecture Overview
-
-MarketHub is structured as a multi-tier, defense-in-depth secure web application:
-
-```
-[ Client Browser ]
-        │
-        ▼ (HTTPS / TLS 1.3)
-[ Security Ingress Layer ]
-    ├── Helmet Security Headers (CSP, Frameguard, nosniff)
-    ├── Express Rate Limiters (Auth, Checkout, API)
-    └── Session Handler (httpOnly, sameSite, Session Fixation Defense)
-        │
-        ▼
-[ Application Routing & RBAC Gate ]
-    ├── Public Catalog Routes (Search & Filtering)
-    ├── Authenticated Customer Routes (Cart & Orders)
-    ├── Vendor Center Routes (Ownership Enforced via requireRole)
-    └── Admin Control Console (requireRole('admin'))
-        │
-        ▼
-[ Controller & Domain Services Layer ]
-    ├── Business Logic & Validation
-    ├── Secure File Upload Filter (crypto random naming)
-    └── Atomic Inventory Transaction Engine
-        │
-        ▼
-[ Data Persistence Tier ]
-    └── Native SQLite Engine (node:sqlite DatabaseSync)
-        └── 100% Parameterized Prepared Statements
-```
+*Describe the multi-tier system structure (Client / API Gateway / Domain Services / Data Persistence).*
 
 ### 2.2 Data Flow & Component Interaction
-
-1. **Ingress:** All incoming requests hit the security middleware stack first. Helmet attaches security headers; rate limiters track IP quotas.
-2. **Session Verification:** `express-session` reads the encrypted `markethub.sid` cookie. If valid, the user identity is attached to `req.session.user`.
-3. **Role & Ownership Gates:** 
-   - Role gates (`requireRole`) inspect role claims directly from the authenticated session.
-   - Ownership gates inspect resource ownership inside the controller using parameterized database queries.
-4. **Execution & Auditing:** Any critical state change (login, registration, product creation, checkout, role change, or security violation) writes an immediate event to the `audit_logs` table.
+*Outline how requests traverse the system from ingress to storage and back, highlighting trust boundaries.*
 
 ### 2.3 Technology Stack Rationale
+*Explain the tools selected and why alternatives were rejected:*
+- **Backend / API Framework:** (e.g., FastAPI, Express, Go Gin) — *Why chosen:*
+- **Frontend / Client:** (e.g., React, Next.js, HTML/JS) — *Why chosen:*
+- **Database & Persistence:** (e.g., PostgreSQL, SQLite, Redis) — *Why chosen:*
+- **Authentication & Cryptography:** (e.g., Bcrypt/Argon2, PyJWT) — *Why chosen:*
 
-- **Runtime & Backend:** **Node.js 24 + Express 4.21**  
-  *Rationale:* Modern LTS JavaScript runtime with built-in zero-dependency database capabilities, non-blocking I/O, and mature security middleware ecosystem.
-- **Database Engine:** **Native `node:sqlite` (`DatabaseSync`)**  
-  *Rationale:* Node 24 includes native SQLite support directly in the standard library. Eliminates brittle native C++ build tools (node-gyp/Visual Studio) while enforcing synchronous, atomic ACID transactions and parameterized prepared statements.
-- **View Engine:** **EJS (Embedded JavaScript Templates)**  
-  *Rationale:* Server-side rendered views guarantee contextual auto-escaping to eliminate reflected and stored XSS vulnerabilities without client-side bundle attack surface.
-- **Cryptography:** **Bcrypt.js (12 Salt Rounds)**  
-  *Rationale:* Proven, memory-hard key derivation function resilient against GPU-based offline dictionary attacks.
-- **File Handling:** **Multer with Cryptographic Hex Renaming**  
-  *Rationale:* Strips user-supplied filenames to eliminate directory traversal (`../../`) and null-byte injection.
+### 2.4 Defense-in-Depth Security Controls
+*Detail the specific security controls implemented:*
+1. **Authentication & Session Security:** (e.g., salted password hashing, short-lived signed tokens)
+2. **Authorization & Access Control:** (e.g., role-based access control, object-level permission checks)
+3. **Input Validation & Sanitization:** (e.g., strict schema validation, query parameterization to prevent SQLi)
+4. **Rate Limiting & Abuse Prevention:** (e.g., IP/token bucket throttling on public endpoints)
+5. **Secrets & Configuration Hygiene:** (e.g., zero hardcoded credentials, 100% environment variable isolation)
 
 ---
 
@@ -102,61 +52,56 @@ MarketHub is structured as a multi-tier, defense-in-depth secure web application
 
 | Milestone / Phase | Time Window | Key Objectives & Deliverables | Security Verification | Status |
 |---|---|---|---|---|
-| **Phase 1: Foundation & Build** | 0h – 6h | Scaffolding, SQLite schema, Auth, RBAC, Customer/Vendor/Admin flows, Cart, Checkout, Audit logging | 18/18 Automated Security Tests passing (`npm test`) | `Completed` |
-| **Phase 2: Cloud Deployment** | 6h – 12h | Dockerfile, Render blueprint, health check endpoint, live cloud deployment | `/health` check HTTP 200 OK | `In Progress` |
-| **Phase 3: Security Hardening**| 12h – 18h | IDOR penetration testing, XSS fuzzing, SQLi stress testing, session fixation audit | Automated SAST & Penetration Check | `Planned` |
-| **Phase 4: Polish & Freeze** | 18h – 24h | Final documentation, live URL verification, commit SHA lock in `metadata/submission.yaml` | Submission freeze verification | `Planned` |
+| **Phase 1: Foundation & Setup** | 0h – 4h | Contract onboarding, repo setup, baseline data schemas | Secret scan & baseline check | `Planned` |
+| **Phase 2: Core Domain & Auth** | 4h – 12h | Core business logic, secure authentication & authorization | Auth test suite & crypto validation | `Planned` |
+| **Phase 3: Security & Hardening**| 12h – 18h | Input validation, rate limiting, error handling, security middleware | SAST scanning & edge case tests | `Planned` |
+| **Phase 4: Polish & Deployment**| 18h – 24h | UI polish, live cloud deployment, final docs & commit freeze | Live deployment URL check | `Planned` |
 
 ---
 
 ## 4. Architecture Decision Records (ADRs)
 
-### ADR-001: Native `node:sqlite` with Prepared Statements
-- **Status:** Accepted
-- **Context:** Node.js 24 provides built-in `node:sqlite` with `DatabaseSync`. External SQLite packages (e.g. `better-sqlite3`, `sqlite3`) require native C++ compilers on Windows which introduce build fragility.
-- **Decision:** Use native `node:sqlite` for all database persistence.
-- **Security & Performance Trade-offs:** Zero external binary dependencies; 100% prepared statement enforcement guarantees immunity against SQL injection attacks.
+### ADR-001: [Title of First Major Decision]
+- **Status:** [Proposed | Accepted | Superseded]
+- **Context:** *What was the architectural context, problem, or requirement?*
+- **Options Considered:** 
+  1. *Option A (e.g., choice 1)*
+  2. *Option B (e.g., choice 2)*
+- **Decision & Rationale:** *What was decided and why was it chosen over alternatives?*
+- **Security & Performance Trade-offs:** *What are the security implications or performance impacts?*
 
-### ADR-002: Session-based RBAC with Session Fixation Defense
-- **Status:** Accepted
-- **Context:** JWT tokens in `localStorage` are vulnerable to token theft via XSS.
-- **Decision:** Use server-side sessions with signed `httpOnly`, `sameSite: 'lax'` cookies. On every successful login, invoke `req.session.regenerate()` to issue a brand-new session token.
-- **Security & Performance Trade-offs:** Immune to XSS token theft and session fixation attacks.
-
-### ADR-003: Cryptographic File Upload Isolation
-- **Status:** Accepted
-- **Context:** User-uploaded product images could contain malicious file extensions, directory traversal sequences, or excessive payloads.
-- **Decision:** Implement Multer with a 2MB limit, strict MIME/extension whitelist (`jpg`, `jpeg`, `png`, `webp`), and rewrite filenames using 16 bytes of cryptographic entropy (`crypto.randomBytes(16).toString('hex')`).
-- **Security & Performance Trade-offs:** Completely eliminates file overwrite and path traversal vulnerabilities.
+### ADR-002: [Title of Second Major Decision]
+- **Status:** [Proposed | Accepted | Superseded]
+- **Context:**
+- **Options Considered:**
+- **Decision & Rationale:**
+- **Security & Performance Trade-offs:**
 
 ---
 
 ## 5. Engineering Journal & Real-Time Decision Log
 
-### [2026-10-05 12:44 IST] Entry 1: Scaffolding, Package Manifest & Environment Isolation
-- **Focus:** Created `.gitignore`, `.env.example`, `.env`, and configured core security dependencies.
-- **Key Challenges:** External native SQLite modules required Visual Studio C++ build tools on Windows.
-- **Resolution:** Pivoted to Node.js 24's native `node:sqlite` standard library, eliminating native build dependencies.
+*Maintain this chronological log as your team builds during the 24-hour hackathon.*
 
-### [2026-10-05 12:55 IST] Entry 2: Phase 1 (BUILD) Architecture & Role Implementations
-- **Focus:** Complete implementation of database schema, seed accounts, security middlewares, controllers, and views for Customer, Vendor, and Admin personas.
-- **Resolution:** Full end-to-end user journeys operational: registration, authentication, product browsing, cart, mock transactional checkout, vendor inventory management, admin moderation, and security audit log streaming.
+### [YYYY-MM-DD HH:MM IST] Entry 1: Project Initialization & Scope Lock
+- **Focus:** Initial repository setup, team alignment, and schema architecture.
+- **Key Challenges:** 
+- **Resolution:** 
+
+### [YYYY-MM-DD HH:MM IST] Entry 2: Implementation Milestone Progress
+- **Focus:** 
+- **Key Challenges:** 
+- **Resolution:** 
 
 ---
 
 ## 6. Testing, Security Verification & Deployment Record
 
 ### 6.1 Testing & Security Verification Strategy
-- **Automated Security Suite:** [`tests/security_test.js`](../tests/security_test.js) executes 18 automated unit and integration tests verifying:
-  - Database schema & seed persona existence (Admin, Vendor 1, Vendor 2, Customer)
-  - Bcrypt password hashing (salt rounds $\ge 12$)
-  - SQL injection resistance with malicious payloads (`' OR '1'='1' --`)
-  - Cross-vendor and cross-customer IDOR isolation
-  - Inventory decrement transactional safety
-  - Security audit log persistence
-- **Static Analysis & Linting:** `npm audit` reports 0 vulnerabilities across 104 audited dependencies.
+- **Unit & Integration Tests:** (Describe test coverage in `src/`)
+- **Static Analysis & Linting:** (Lint and security checks run)
 
 ### 6.2 Deployment Verification
-- **Live Deployment Platform:** Render Cloud Application Platform
-- **Deployment URL:** Recorded in `deployment/README.md` and `metadata/submission.yaml`
-- **Health Check Endpoint:** `/health` returning JSON service status and database connectivity
+- **Live Deployment Platform:** (e.g., Vercel, Render, Railway, AWS)
+- **Deployment URL:** (Recorded in `metadata/submission.yaml` and `deployment/README.md`)
+- **Health Check Endpoint:** (e.g., `/health` or `/api/health`)

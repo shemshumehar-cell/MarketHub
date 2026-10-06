@@ -4,8 +4,8 @@
 version: "1.0"
 
 submission:
-  team_id: "T.No-46B"
-  repository: "https://github.com/shemshumehar-cell/MarketHub.git"
+  team_id: ""
+  repository: ""
   commit_sha: ""
   deployment_url: ""
   submitted_at: ""
